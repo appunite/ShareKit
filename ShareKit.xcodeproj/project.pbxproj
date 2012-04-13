@@ -96,7 +96,7 @@
 		4C978DF4153825120035ED39 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C978DF3153825120035ED39 /* SenTestingKit.framework */; };
 		4C978DF5153825120035ED39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		4C978DF6153825120035ED39 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		4C978DF9153825120035ED39 /* libShareKitLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C978DE5153825120035ED39 /* libShareKitLibrary.a */; };
+		4C978DF9153825120035ED39 /* libShareKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C978DE5153825120035ED39 /* libShareKit.a */; };
 		4C978DFF153825120035ED39 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C978DFD153825120035ED39 /* InfoPlist.strings */; };
 		4C978E02153825120035ED39 /* ShareKitLibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C978E01153825120035ED39 /* ShareKitLibraryTests.m */; };
 		4C978E0A153826380035ED39 /* SHKCustomActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AA40553146F0EFF00685C81 /* SHKCustomActionSheet.m */; };
@@ -115,7 +115,6 @@
 		4C978E17153826380035ED39 /* UIWebView+SHK.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A5367A11DBE3B9004A1712 /* UIWebView+SHK.m */; };
 		4C978E18153826380035ED39 /* NSMutableDictionary+NSNullsToEmptyStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A25903614CD4E8000FBA124 /* NSMutableDictionary+NSNullsToEmptyStrings.m */; };
 		4C978E19153826380035ED39 /* NSHTTPCookieStorage+DeleteForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A333EE414CC5B9D0060900C /* NSHTTPCookieStorage+DeleteForURL.m */; };
-		4C978E1A153826380035ED39 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AF2523714F0499E00CE8709 /* JSONKit.m */; };
 		4C978E1B153826380035ED39 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = A57772B314BA0748003FC744 /* SSKeychain.m */; };
 		4C978E1C153826380035ED39 /* NSMutableURLRequest+Parameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A5368211DBE3B9004A1712 /* NSMutableURLRequest+Parameters.m */; };
 		4C978E1D153826380035ED39 /* NSString+URLEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A5368411DBE3B9004A1712 /* NSString+URLEncoding.m */; };
@@ -211,7 +210,6 @@
 		4C978E77153826BF0035ED39 /* UIWebView+SHK.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A5367911DBE3B9004A1712 /* UIWebView+SHK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C978E78153826BF0035ED39 /* NSMutableDictionary+NSNullsToEmptyStrings.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A25903514CD4E8000FBA124 /* NSMutableDictionary+NSNullsToEmptyStrings.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C978E79153826BF0035ED39 /* NSHTTPCookieStorage+DeleteForURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A333EE314CC5B9D0060900C /* NSHTTPCookieStorage+DeleteForURL.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4C978E7A153826BF0035ED39 /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 7AF2523614F0499E00CE8709 /* JSONKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C978E7B153826BF0035ED39 /* SSKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = A57772B214BA0748003FC744 /* SSKeychain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C978E7C153826BF0035ED39 /* NSMutableURLRequest+Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A5368111DBE3B9004A1712 /* NSMutableURLRequest+Parameters.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C978E7D153826BF0035ED39 /* NSString+URLEncoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A5368311DBE3B9004A1712 /* NSString+URLEncoding.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -528,7 +526,7 @@
 		43C91DF411EBAE4800F31FAE /* SHKTumblr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHKTumblr.m; sourceTree = "<group>"; };
 		43D1DEEF11D5CDD200550D75 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		43EF406D11D3FFF800B1F700 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		4C978DE5153825120035ED39 /* libShareKitLibrary.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libShareKitLibrary.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C978DE5153825120035ED39 /* libShareKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libShareKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C978DE9153825120035ED39 /* ShareKitLibrary-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ShareKitLibrary-Prefix.pch"; sourceTree = "<group>"; };
 		4C978DEA153825120035ED39 /* ShareKitLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareKitLibrary.h; sourceTree = "<group>"; };
 		4C978DEB153825120035ED39 /* ShareKitLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareKitLibrary.m; sourceTree = "<group>"; };
@@ -675,7 +673,7 @@
 				4C978DF4153825120035ED39 /* SenTestingKit.framework in Frameworks */,
 				4C978DF5153825120035ED39 /* UIKit.framework in Frameworks */,
 				4C978DF6153825120035ED39 /* Foundation.framework in Frameworks */,
-				4C978DF9153825120035ED39 /* libShareKitLibrary.a in Frameworks */,
+				4C978DF9153825120035ED39 /* libShareKit.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -695,7 +693,7 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* ShareKit.app */,
-				4C978DE5153825120035ED39 /* libShareKitLibrary.a */,
+				4C978DE5153825120035ED39 /* libShareKit.a */,
 				4C978DF2153825120035ED39 /* ShareKitLibraryTests.octest */,
 			);
 			name = Products;
@@ -1442,7 +1440,6 @@
 				4C978E77153826BF0035ED39 /* UIWebView+SHK.h in Headers */,
 				4C978E78153826BF0035ED39 /* NSMutableDictionary+NSNullsToEmptyStrings.h in Headers */,
 				4C978E79153826BF0035ED39 /* NSHTTPCookieStorage+DeleteForURL.h in Headers */,
-				4C978E7A153826BF0035ED39 /* JSONKit.h in Headers */,
 				4C978E7B153826BF0035ED39 /* SSKeychain.h in Headers */,
 				4C978E7C153826BF0035ED39 /* NSMutableURLRequest+Parameters.h in Headers */,
 				4C978E7D153826BF0035ED39 /* NSString+URLEncoding.h in Headers */,
@@ -1533,9 +1530,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* ShareKit */ = {
+		1D6058900D05DD3D006BFB54 /* ShareKitOld */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "ShareKit" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "ShareKitOld" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -1545,14 +1542,14 @@
 			);
 			dependencies = (
 			);
-			name = ShareKit;
+			name = ShareKitOld;
 			productName = ShareKit;
 			productReference = 1D6058910D05DD3D006BFB54 /* ShareKit.app */;
 			productType = "com.apple.product-type.application";
 		};
-		4C978DE4153825120035ED39 /* ShareKitLibrary */ = {
+		4C978DE4153825120035ED39 /* ShareKit */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4C978E07153825120035ED39 /* Build configuration list for PBXNativeTarget "ShareKitLibrary" */;
+			buildConfigurationList = 4C978E07153825120035ED39 /* Build configuration list for PBXNativeTarget "ShareKit" */;
 			buildPhases = (
 				4C978DE1153825120035ED39 /* Sources */,
 				4C978DE2153825120035ED39 /* Frameworks */,
@@ -1562,9 +1559,9 @@
 			);
 			dependencies = (
 			);
-			name = ShareKitLibrary;
+			name = ShareKit;
 			productName = ShareKitLibrary;
-			productReference = 4C978DE5153825120035ED39 /* libShareKitLibrary.a */;
+			productReference = 4C978DE5153825120035ED39 /* libShareKit.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		4C978DF1153825120035ED39 /* ShareKitLibraryTests */ = {
@@ -1617,8 +1614,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* ShareKit */,
-				4C978DE4153825120035ED39 /* ShareKitLibrary */,
+				1D6058900D05DD3D006BFB54 /* ShareKitOld */,
+				4C978DE4153825120035ED39 /* ShareKit */,
 				4C978DF1153825120035ED39 /* ShareKitLibraryTests */,
 			);
 		};
@@ -1809,7 +1806,6 @@
 				4C978E17153826380035ED39 /* UIWebView+SHK.m in Sources */,
 				4C978E18153826380035ED39 /* NSMutableDictionary+NSNullsToEmptyStrings.m in Sources */,
 				4C978E19153826380035ED39 /* NSHTTPCookieStorage+DeleteForURL.m in Sources */,
-				4C978E1A153826380035ED39 /* JSONKit.m in Sources */,
 				4C978E1B153826380035ED39 /* SSKeychain.m in Sources */,
 				4C978E1C153826380035ED39 /* NSMutableURLRequest+Parameters.m in Sources */,
 				4C978E1D153826380035ED39 /* NSString+URLEncoding.m in Sources */,
@@ -1906,7 +1902,7 @@
 /* Begin PBXTargetDependency section */
 		4C978DF8153825120035ED39 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4C978DE4153825120035ED39 /* ShareKitLibrary */;
+			target = 4C978DE4153825120035ED39 /* ShareKit */;
 			targetProxy = 4C978DF7153825120035ED39 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1988,6 +1984,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = include/ShareKit;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -2007,6 +2004,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = include/ShareKit;
 				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2096,7 +2094,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "ShareKit" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "ShareKitOld" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
@@ -2105,13 +2103,14 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4C978E07153825120035ED39 /* Build configuration list for PBXNativeTarget "ShareKitLibrary" */ = {
+		4C978E07153825120035ED39 /* Build configuration list for PBXNativeTarget "ShareKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4C978E03153825120035ED39 /* Debug */,
 				4C978E04153825120035ED39 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4C978E08153825120035ED39 /* Build configuration list for PBXNativeTarget "ShareKitLibraryTests" */ = {
 			isa = XCConfigurationList;
@@ -2120,6 +2119,7 @@
 				4C978E06153825120035ED39 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ShareKit" */ = {
 			isa = XCConfigurationList;
