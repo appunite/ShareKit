@@ -85,7 +85,7 @@
 
 //Change if your app needs some special Facebook permissions only. In most cases you can leave it as it is.
 - (NSArray*)facebookListOfPermissions {    
-    return [NSArray arrayWithObjects:@"publish_stream", @"offline_access", nil];
+    return [NSArray arrayWithObjects:@"publish_stream", @"offline_access",@"email", nil];
 }
 
 // Read It Later - http://readitlaterlist.com/api/signup/ 

@@ -26,7 +26,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Facebook.h"
+#import <Facebook/Facebook.h>
+#import <AUKit/AULoginSession.h>
+#import <AUKit/AULoginSession+Additions.h>
 #import "SHKSharer.h"
 #import "SHKCustomFormControllerLargeTextField.h"
 
