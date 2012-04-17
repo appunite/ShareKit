@@ -1,14 +1,14 @@
 //
-//  ShareKitLibraryTests.m
-//  ShareKitLibraryTests
+//  ShareKitTests.m
+//  ShareKitTests
 //
-//  Created by Karol Wojtaszek on 13.04.2012.
+//  Created by Karol Wojtaszek on 17.04.2012.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "ShareKitLibraryTests.h"
+#import "ShareKitTests.h"
 
-@implementation ShareKitLibraryTests
+@implementation ShareKitTests
 
 - (void)setUp
 {
@@ -26,7 +26,7 @@
 
 - (void)testExample
 {
-    STFail(@"Unit tests are not implemented yet in ShareKitLibraryTests");
+    STFail(@"Unit tests are not implemented yet in ShareKitTests");
 }
 
 @end
