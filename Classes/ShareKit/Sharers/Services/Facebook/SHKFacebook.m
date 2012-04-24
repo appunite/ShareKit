@@ -58,7 +58,8 @@ static NSString *const kSHKFacebookUserInfo =@"kSHKFacebookUserInfo";
   static Facebook *facebook=nil;
   @synchronized([SHKFacebook class]) {
     if (! facebook)
-      facebook = [[Facebook alloc] initWithAppId:SHKCONFIG(facebookAppId) urlSchemeSuffix:SHKCONFIG(facebookLocalAppId) andDelegate:nil];
+        facebook = [[AULoginSession sharedAULoginSession] facebook];
+     // facebook = [[Facebook alloc] initWithAppId:SHKCONFIG(facebookAppId) urlSchemeSuffix:SHKCONFIG(facebookLocalAppId) andDelegate:nil];
   }
   return facebook;
 }
