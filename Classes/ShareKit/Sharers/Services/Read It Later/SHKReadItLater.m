@@ -47,7 +47,7 @@
 
 + (NSString *)sharerTitle
 {
-	return @"Read It Later";
+	return @"Pocket";
 }
 
 + (BOOL)canShareURL
@@ -130,9 +130,9 @@
 	if (type == SHKShareTypeURL)
 		return [NSArray arrayWithObjects:
 				[SHKFormFieldSettings label:SHKLocalizedString(@"Title") key:@"title" type:SHKFormFieldTypeText start:item.title],
-				[SHKFormFieldSettings label:SHKLocalizedString(@"Tags") key:@"tags" type:SHKFormFieldTypeText start:item.tags],
+				[SHKFormFieldSettings label:SHKLocalizedString(@"Tag, tag") key:@"tags" type:SHKFormFieldTypeText start:[item.tags componentsJoinedByString:@", "]],
 				nil];
-	
+    
 	return nil;
 }
 
@@ -144,20 +144,26 @@
 {		
 	if ([self validateItem])
 	{	
+		// SHKEncode() does not encode quotes but Read It Later requires it, so we do it here.
 		NSString *new = [NSString stringWithFormat:@"&new={\"0\":{\"url\":\"%@\",\"title\":\"%@\"}}",
 						 SHKEncodeURL(item.URL),
-						 SHKEncode(item.title)];
+						 SHKEncode([item.title stringByReplacingOccurrencesOfString:@"\"" withString:@"&quot;"])];
 		
-		NSString *tags = item.tags == nil || !item.tags.length ? @"" :
+        NSMutableCharacterSet *allowedCharacters = [NSMutableCharacterSet alphanumericCharacterSet];
+        [allowedCharacters formUnionWithCharacterSet:[NSCharacterSet punctuationCharacterSet]];
+        [allowedCharacters addCharactersInString:@" "];
+        [allowedCharacters removeCharactersInString:@","];
+        NSString *tagString = [self tagStringJoinedBy:@"," allowedCharacters:allowedCharacters tagPrefix:nil tagSuffix:nil];
+		NSString *formattedTagString = [tagString length] < 1 ? @"" :
 		[NSString stringWithFormat:@"&update_tags={\"0\":{\"url\":\"%@\",\"tags\":\"%@\"}}",
-						  SHKEncodeURL(item.URL), SHKEncode(item.tags)];
+						  SHKEncodeURL(item.URL), SHKEncode(tagString)];
 		
 		NSString *params = [NSMutableString stringWithFormat:@"apikey=%@&username=%@&password=%@%@%@",
 									SHKCONFIG(readItLaterKey),
 							SHKEncode([self getAuthValueForKey:@"username"]),
 							SHKEncode([self getAuthValueForKey:@"password"]),
 							new,
-							tags];
+							formattedTagString];
 		
 		self.request = [[[SHKRequest alloc] initWithURL:[NSURL URLWithString:@"http://readitlaterlist.com/v2/send"]
 									 params:params

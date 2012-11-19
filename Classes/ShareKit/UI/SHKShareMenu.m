@@ -29,8 +29,11 @@
 #import "SHKShareMenu.h"
 #import "SHK.h"
 #import "SHKSharer.h"
-#import "SHKCustomShareMenuCell.h"
 #import "SHKShareItemDelegate.h"
+
+@interface SHKShareMenu()
+@property (retain) SHKSharer* limboSharer;
+@end
 
 @implementation SHKShareMenu
 
@@ -38,6 +41,7 @@
 @synthesize tableData;
 @synthesize exclusions;
 @synthesize shareDelegate;
+@synthesize limboSharer;
 
 #pragma mark -
 #pragma mark Initialization
@@ -48,9 +52,9 @@
 	[tableData release];
 	[exclusions release];
 	[shareDelegate release];
+	[limboSharer release];
     [super dealloc];
 }
-
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -77,15 +81,23 @@
     [super viewDidLoad];
     
     if (SHKCONFIG(formBackgroundColor) != nil)
+	{
+		self.tableView.backgroundView = nil;
         self.tableView.backgroundColor = SHKCONFIG(formBackgroundColor);
+	}
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
 	[super viewDidDisappear:animated];
 	
-	// Remove the SHK view wrapper from the window
-	[[SHK currentHelper] viewWasDismissed];
+	if (![UIViewController instancesRespondToSelector:@selector(dismissViewControllerAnimated:completion:)]) {
+        // Remove the SHK view wrapper from the window
+        [[SHK currentHelper] viewWasDismissed];
+    }
+	
+    if(self.limboSharer != nil)
+		[self.limboSharer share];
 }
 
 - (void)setItem:(SHKItem *)i
@@ -108,7 +120,15 @@
 	// If not editing, hide them
 	
     if([[NSUserDefaults standardUserDefaults] objectForKey:@"SHKExcluded"] != nil){
-        [self setExclusions:[NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"SHKExcluded"]]];
+    
+        NSObject *excluded = [[NSUserDefaults standardUserDefaults] objectForKey:@"SHKExcluded"];
+        
+        //due to backwards compatibility - SHKExcluded used to be saved as NSDictionary. It is better as NSArray, as favourites are NSArray too.
+        if ([excluded isKindOfClass:[NSDictionary class]]) {
+            [self setExclusions:[NSMutableArray arrayWithArray:[(NSDictionary*)excluded allKeys]]];
+        } else if ([excluded isKindOfClass:[NSArray class]]) {
+            [self setExclusions:[NSMutableArray arrayWithArray:(NSArray*)excluded]];
+        }
     }else{
         [self setExclusions:[NSMutableArray arrayWithCapacity:0]];
     }
@@ -218,10 +238,10 @@
 {    
     static NSString *CellIdentifier = @"Cell";
     
-    SHKCustomShareMenuCell *cell = (SHKCustomShareMenuCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil)
 	{
-        cell = [[[SHKCustomShareMenuCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[[SHKCONFIG(SHKShareMenuCellSubclass) alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	}
     
@@ -288,10 +308,11 @@
 		{
 			doShare = [shareDelegate aboutToShareItem:item withSharer:sharer];
 		}
-		if(doShare)
-			[sharer share];
 		
 		[[SHK currentHelper] hideCurrentViewControllerAnimated:YES];
+		
+		if(doShare)
+			self.limboSharer = sharer;
 	}
 }
 

@@ -68,8 +68,8 @@
 
 	UIPrintInteractionController *printer = [UIPrintInteractionController sharedPrintController];
 	UIPrintInfo *info = [UIPrintInfo printInfo];
-	info.outputType = UIPrintInfoOutputPhoto;
-	printer.printInfo = info;
+    info.outputType = self.item.printOutputType;
+    printer.printInfo = info;
 	printer.showsPageRange = NO;
 	printer.printingItem = item.image;
 	UIPrintInteractionCompletionHandler completionHandler = ^(UIPrintInteractionController *printer,
@@ -84,7 +84,7 @@
 	};
 
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-		UIView *view = [SHK currentHelper].rootViewForCustomUIDisplay.view;
+		UIView *view = [SHK currentHelper].rootViewForUIDisplay.view;
 		CGSize viewSize = view.bounds.size;
 		CGRect fromRect = CGRectMake(viewSize.width/2, viewSize.height/2,
 									 viewSize.width, viewSize.height);

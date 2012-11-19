@@ -28,7 +28,6 @@
 #import "SHK.h"
 #import "SHKActivityIndicator.h"
 #import "SHKConfiguration.h"
-#import "SHKViewControllerWrapper.h"
 #import "SHKActionSheet.h"
 #import "SHKOfflineSharer.h"
 #import "SSKeychain.h"
@@ -37,23 +36,21 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 #import <MessageUI/MessageUI.h>
+#include <sys/xattr.h>
 
 NSString * SHKLocalizedStringFormat(NSString* key);
 NSString * const SHKHideCurrentViewFinishedNotification = @"SHKHideCurrentViewFinished";
 
 @interface SHK ()
 
-@property (nonatomic, assign) UIViewController *rootViewController, *currentRootViewController;
-
-- (UIViewController *)getCurrentRootViewController;
-- (UIViewController *)getTopViewController:(UIViewController *)aRootViewController;
+@property (nonatomic, assign) UIViewController *rootViewController;
 
 @end
 
 @implementation SHK
 
 @synthesize currentView, pendingView, isDismissingView;
-@synthesize rootViewController, currentRootViewController;
+@synthesize rootViewController;
 @synthesize offlineQueue;
 
 static SHK *_currentHelper = nil;
@@ -102,81 +99,28 @@ BOOL SHKinit;
 	[helper setRootViewController:vc];	
 }
 
-- (UIViewController *)rootViewForCustomUIDisplay {
+- (UIViewController *)rootViewForUIDisplay {
     
     UIViewController *result = [self getCurrentRootViewController];
-    result = [self getTopViewController:result];
-    return result;    
-}
-
-- (void)showViewController:(UIViewController *)vc
-{	
-	self.currentRootViewController = [self getCurrentRootViewController];
-	
-	// Find the top most view controller being displayed (so we can add the modal view to it and not one that is hidden)
-	UIViewController *topViewController = [self getTopViewController:self.currentRootViewController];	
-	if (topViewController == nil)
-		NSAssert(NO, @"ShareKit: There is no view controller to display from");
-	
-		
-	// If a view is already being shown, hide it, and then try again
-	if (currentView != nil)
-	{
-		self.pendingView = vc;
-		[[currentView parentViewController] dismissModalViewControllerAnimated:YES];
-		return;
-	}
-		
-	// Wrap the view in a nav controller if not already
-	if (![vc respondsToSelector:@selector(pushViewController:animated:)])
-	{
-		UINavigationController *nav = [[[UINavigationController alloc] initWithRootViewController:vc] autorelease];
-		
-		if ([nav respondsToSelector:@selector(modalPresentationStyle)])
-			nav.modalPresentationStyle = [SHK modalPresentationStyle];
-		
-		if ([nav respondsToSelector:@selector(modalTransitionStyle)])
-			nav.modalTransitionStyle = [SHK modalTransitionStyle];
-		
-		nav.navigationBar.barStyle = nav.toolbar.barStyle = [SHK barStyle];
-        nav.navigationBar.tintColor = SHKCONFIG_WITH_ARGUMENT(barTintForView:,vc);
-		
-		[topViewController presentModalViewController:nav animated:YES];			
-		self.currentView = nav;
-	}
-	
-	// Show the nav controller
-	else
-	{		
-		if ([vc respondsToSelector:@selector(modalPresentationStyle)])
-			vc.modalPresentationStyle = [SHK modalPresentationStyle];
-		
-		if ([vc respondsToSelector:@selector(modalTransitionStyle)])
-			vc.modalTransitionStyle = [SHK modalTransitionStyle];
-		
-		[topViewController presentModalViewController:vc animated:YES];
-		[(UINavigationController *)vc navigationBar].barStyle = 
-		[(UINavigationController *)vc toolbar].barStyle = [SHK barStyle];
-		[(UINavigationController *)vc navigationBar].tintColor = SHKCONFIG_WITH_ARGUMENT(barTintForView:,vc);
-		self.currentView = vc;
-	}
-		
-	self.pendingView = nil;		
+    
+    // Find the top most view controller being displayed (so we can add the modal view to it and not one that is hidden)
+	while (result.modalViewController != nil) result = result.modalViewController;
+    
+    NSAssert(result, @"ShareKit: There is no view controller to display from");
+	return result;  
 }
 
 - (UIViewController *)getCurrentRootViewController {
     
     UIViewController *result;
     
-    if (rootViewController)
+    if (rootViewController) // If developer provieded a root view controler, use it
     {
-        // If developer provieded a root view controler, use it
+        
         result = rootViewController;
     }
-    else
+    else // Try to find the root view controller programmically
 	{
-		// Try to find the root view controller programmically
-		
 		// Find the top window (that is not an alert view or other window)
 		UIWindow *topWindow = [[UIApplication sharedApplication] keyWindow];
 		if (topWindow.windowLevel != UIWindowLevelNormal)
@@ -189,7 +133,7 @@ BOOL SHKinit;
 			}
 		}
 		
-		UIView *rootView = [[topWindow subviews] objectAtIndex:0];	
+		UIView *rootView = [[topWindow subviews] objectAtIndex:0];
 		id nextResponder = [rootView nextResponder];
 		
 		if ([nextResponder isKindOfClass:[UIViewController class]])
@@ -199,7 +143,48 @@ BOOL SHKinit;
 		else
 			NSAssert(NO, @"ShareKit: Could not find a root view controller.  You can assign one manually by calling [[SHK currentHelper] setRootViewController:YOURROOTVIEWCONTROLLER].");
 	}
-    return result;    
+    return result;
+}
+
+- (void)showViewController:(UIViewController *)vc
+{	
+    // Wrap the view in a nav controller if not already. Used for system views, such as share menu and share forms
+	if (![vc isKindOfClass:[UINavigationController class]]) vc = [[[UINavigationController alloc] initWithRootViewController:vc] autorelease];
+    
+    [(UINavigationController *)vc navigationBar].barStyle = [SHK barStyle];
+    [(UINavigationController *)vc toolbar].barStyle = [SHK barStyle];
+    [(UINavigationController *)vc navigationBar].tintColor = SHKCONFIG_WITH_ARGUMENT(barTintForView:,vc);
+    
+    [self showStandaloneViewController:vc];
+}
+
+/* method for sharers with custom UI, e.g. all social.framework sharers, print etc */
+- (void)showStandaloneViewController:(UIViewController *)vc {
+           
+    if ([vc respondsToSelector:@selector(modalPresentationStyle)])
+        vc.modalPresentationStyle = [SHK modalPresentationStyleForController:vc];
+    
+    if ([vc respondsToSelector:@selector(modalTransitionStyle)])
+        vc.modalTransitionStyle = [SHK modalTransitionStyle];
+    
+    // If a view is already being shown, hide it, and then try again
+	if (currentView != nil)
+	{
+		self.pendingView = vc;
+		[self hideCurrentViewControllerAnimated:YES];
+        return;
+	}
+    
+    [self presentVC:vc];    
+}
+
+- (void)presentVC:(UIViewController *)vc {
+    
+    UIViewController *topViewController = [self rootViewForUIDisplay];
+    [topViewController presentModalViewController:vc animated:YES];
+    
+    self.currentView = vc;
+	self.pendingView = nil;
 }
 
 - (void)hideCurrentViewController
@@ -227,6 +212,7 @@ BOOL SHKinit;
 			self.isDismissingView = YES;            
             [[currentView presentingViewController] dismissViewControllerAnimated:animated completion:^{                                                                           
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self viewWasDismissed];
                     [[NSNotificationCenter defaultCenter] postNotificationName:SHKHideCurrentViewFinishedNotification object:nil];
                 }];
             }];
@@ -240,9 +226,8 @@ BOOL SHKinit;
 - (void)showPendingView
 {
     if (pendingView)
-        [self showViewController:pendingView];
+        [self presentVC:self.pendingView];
 }
-
 
 - (void)viewWasDismissed
 {
@@ -251,9 +236,6 @@ BOOL SHKinit;
 	if (currentView != nil)
 		self.currentView = nil;
 	
-    if (currentRootViewController != nil)
-        self.currentRootViewController = nil;
-
 	if (pendingView)
 	{
 		// This is an ugly way to do it, but it works.
@@ -263,15 +245,7 @@ BOOL SHKinit;
 		return;
 	}
 }
-										   
-- (UIViewController *)getTopViewController:(UIViewController *)aRootViewController
-{
-	UIViewController *result = aRootViewController;
-	while (result.modalViewController != nil)
-		result = result.modalViewController;
-	return result;
-}
-			
+										   		
 + (UIBarStyle)barStyle
 {
 	if ([SHKCONFIG(barStyle) isEqualToString:@"UIBarStyleBlack"])
@@ -286,15 +260,17 @@ BOOL SHKinit;
 	return UIBarStyleDefault;
 }
 
-+ (UIModalPresentationStyle)modalPresentationStyle
++ (UIModalPresentationStyle)modalPresentationStyleForController:(UIViewController *)controller
 {
-	if ([SHKCONFIG(modalPresentationStyle) isEqualToString:@"UIModalPresentationFullScreen"])
+	NSString *styleString = SHKCONFIG_WITH_ARGUMENT(modalPresentationStyleForController:, controller);
+	
+	if ([styleString isEqualToString:@"UIModalPresentationFullScreen"])
 		return UIModalPresentationFullScreen;
 	
-	else if ([SHKCONFIG(modalPresentationStyle) isEqualToString:@"UIModalPresentationPageSheet"])
+	else if ([styleString isEqualToString:@"UIModalPresentationPageSheet"])
 		return UIModalPresentationPageSheet;
 	
-	else if ([SHKCONFIG(modalPresentationStyle) isEqualToString:@"UIModalPresentationFormSheet"])
+	else if ([styleString isEqualToString:@"UIModalPresentationFormSheet"])
 		return UIModalPresentationFormSheet;
 	
 	return UIModalPresentationCurrentContext;
@@ -429,20 +405,6 @@ BOOL SHKinit;
 }
 
 #pragma mark -
-
-+ (NSDictionary *)getUserExclusions
-{
-	return [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@Exclusions", SHKCONFIG(favsPrefixKey)]];
-}
-
-+ (void)setUserExclusions:(NSDictionary *)exclusions
-{
-	return [[NSUserDefaults standardUserDefaults] setObject:exclusions forKey:[NSString stringWithFormat:@"%@Exclusions", SHKCONFIG(favsPrefixKey)]];
-}
-
-
-
-#pragma mark -
 #pragma mark Credentials
 
 // TODO someone with more keychain experience may want to clean this up.  The use of SFHFKeychainUtils may be unnecessary?
@@ -505,12 +467,39 @@ BOOL SHKinit;
 
 #pragma mark -
 
+static NSString *shareKitLibraryBundlePath = nil;
+
++ (NSString *)shareKitLibraryBundlePath
+{
+    if (shareKitLibraryBundlePath == nil) {
+        
+        shareKitLibraryBundlePath = [[[NSBundle mainBundle] pathForResource:@"ShareKit" ofType:@"bundle"] retain];
+    }
+    return shareKitLibraryBundlePath;
+}
+
 static NSDictionary *sharersDictionary = nil;
 
 + (NSDictionary *)sharersDictionary
 {
 	if (sharersDictionary == nil)
-		sharersDictionary = [[NSDictionary dictionaryWithContentsOfFile:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:SHKCONFIG(sharersPlistName)]] retain];
+    {        
+		sharersDictionary = [[NSDictionary dictionaryWithContentsOfFile:[[SHK shareKitLibraryBundlePath] stringByAppendingPathComponent:SHKCONFIG(sharersPlistName)]] retain];
+    }
+    
+    //if user sets his own sharers plist - name only
+    if (sharersDictionary == nil) 
+    {
+        sharersDictionary = [[NSDictionary dictionaryWithContentsOfFile:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:SHKCONFIG(sharersPlistName)]] retain];
+    }
+    
+    //if user sets his own sharers plist - complete path
+    if (sharersDictionary == nil) {
+        sharersDictionary = [[NSDictionary dictionaryWithContentsOfFile:SHKCONFIG(sharersPlistName)] retain];
+    }
+    
+    NSAssert(sharersDictionary != nil, @"ShareKit: You do not have properly set sharersPlistName");
+    
 	
 	return sharersDictionary;
 }
@@ -527,15 +516,19 @@ static NSDictionary *sharersDictionary = nil;
 	NSString *SHKPath = [cache stringByAppendingPathComponent:@"SHK"];
 	
 	// Check if the path exists, otherwise create it
-	if (![fileManager fileExistsAtPath:SHKPath]) 
+	if (![fileManager fileExistsAtPath:SHKPath]) {
 		[fileManager createDirectoryAtPath:SHKPath withIntermediateDirectories:YES attributes:nil error:nil];
+                [[NSFileManager defaultManager] addSkipBackupAttributeToItemAtURL:[NSURL fileURLWithPath:SHKPath]];
+    }
 	
 	return SHKPath;
 }
 
 + (NSString *)offlineQueueListPath
 {
-	return [[self offlineQueuePath] stringByAppendingPathComponent:@"SHKOfflineQueue.plist"];
+	NSString *offlinePathString = [[self offlineQueuePath] stringByAppendingPathComponent:@"SHKOfflineQueue.plist"];
+        [[NSFileManager defaultManager] addSkipBackupAttributeToItemAtURL:[NSURL fileURLWithPath:offlinePathString]];
+        return offlinePathString;
 }
 
 + (NSMutableArray *)getOfflineQueueList
@@ -555,7 +548,7 @@ static NSDictionary *sharersDictionary = nil;
 	}
 	
 	// Generate a unique id for the share to use when saving associated files
-	NSString *uid = [NSString stringWithFormat:@"%@-%i-%i-%i", sharerId, item.shareType, [[NSDate date] timeIntervalSince1970], arc4random()];
+	NSString *uid = [NSString stringWithFormat:@"%@-%i-%f-%i", sharerId, item.shareType, [[NSDate date] timeIntervalSince1970], arc4random()];
 	
 	
 	// store image in cache
@@ -761,9 +754,10 @@ NSString* SHKLocalizedStringFormat(NSString* key)
 {
   static NSBundle* bundle = nil;
   if (nil == bundle) {
-    NSString* path = [[[NSBundle mainBundle] resourcePath]
-                      stringByAppendingPathComponent:@"ShareKit.bundle"];
+    NSString* path = [[SHK shareKitLibraryBundlePath] stringByAppendingPathComponent:@"ShareKit.bundle"];
     bundle = [[NSBundle bundleWithPath:path] retain];
+    
+    NSCAssert(bundle != nil,@"ShareKit has been refactored to be used as Xcode subproject. Please follow the updated installation wiki and re-add it to the project. Please do not forget to clean project and clean build folder afterwards");
   }
   return [bundle localizedStringForKey:key value:key table:nil];
 }
@@ -780,3 +774,33 @@ NSString* SHKLocalizedString(NSString* key, ...)
 	
 	return string;
 }
+
+@implementation NSFileManager (DoNotBackup)
+
+- (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL
+{
+    const char* filePath = [[URL path] fileSystemRepresentation];
+    const char* attrName = "com.apple.MobileBackup";
+    if (&NSURLIsExcludedFromBackupKey == nil) {
+        // iOS 5.0.1 and lower
+        u_int8_t attrValue = 1;
+        int result = setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
+        return result == 0;
+    }
+    else {
+        // First try and remove the extended attribute if it is present
+        int result = getxattr(filePath, attrName, NULL, sizeof(u_int8_t), 0, 0);
+        if (result != -1) {
+            // The attribute exists, we need to remove it
+            int removeResult = removexattr(filePath, attrName, 0);
+            if (removeResult == 0) {
+                NSLog(@"Removed extended attribute on file %@", URL);
+            }
+        }
+        
+        // Set the new key
+        return [URL setResourceValue:[NSNumber numberWithBool:YES] forKey:NSURLIsExcludedFromBackupKey error:nil];
+    }
+}
+
+@end

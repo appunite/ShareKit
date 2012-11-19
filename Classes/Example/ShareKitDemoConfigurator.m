@@ -58,15 +58,24 @@
 // 
 //    Your CFBundleURLSchemes entry: fb555lite
 - (NSString*)facebookAppId {
-	return @"232705466797125";
+	return @"281987678567988";
 }
 
 - (NSString*)facebookLocalAppId {
 	return @"";
 }
+
+- (NSNumber*)forcePreIOS6FacebookPosting {
+	return [NSNumber numberWithBool:false];
+}
+
 // Read It Later - http://readitlaterlist.com/api/signup/ 
 - (NSString*)readItLaterKey {
 	return @"45aT6Vfvg66eWNebybd680gu13pdba3d";
+}
+// Diigo - http://diigo.com/api_dev
+-(NSString*)diigoKey {
+  return @"f401ddc3546cdf3c";
 }
 // Twitter - http://dev.twitter.com/apps/new
 /*
@@ -84,6 +93,10 @@
  2. 'Application Type' should be set to BROWSER (not client)
  3. 'Callback URL' should match whatever you enter in SHKTwitterCallbackUrl.  The callback url doesn't have to be an actual existing url.  The user will never get to it because ShareKit intercepts it before the user is redirected.  It just needs to match.
  */
+
+- (NSNumber*)forcePreIOS5TwitterAccess {
+    return [NSNumber numberWithBool:false];
+}
 
 - (NSString*)twitterConsumerKey {
 	return @"48Ii81VO5NtDKIsQDZ3Ggw";
@@ -115,20 +128,16 @@
  #define SHKEvernoteNetStoreURLBase @"http://www.evernote.com/edam/note/"
  */
 
-- (NSString*)evernoteUserStoreURL {
-	return @"https://sandbox.evernote.com/edam/user";
-}
-
-- (NSString*)evernoteNetStoreURLBase {
-	return @"http://sandbox.evernote.com/edam/note/";
+- (NSString *)evernoteHost {
+    return @"sandbox.evernote.com";
 }
 
 - (NSString*)evernoteConsumerKey {
-	return @"vilemkurz";
+	return @"hansmeyer0711-4037";
 }
 
 - (NSString*)evernoteSecret {
-	return @"e58755227940c41f";
+	return @"e9d68467cd4c1aeb";
 }
 // Flickr - http://www.flickr.com/services/apps/create/
 /*
@@ -169,6 +178,18 @@
 	return @"http://yourdomain.com/callback";
 }
 
+- (NSString*)readabilityConsumerKey {
+	return @"ctruman";
+}
+
+- (NSString*)readabilitySecret {
+	return @"RGXDE6wTygKtkwDBHpnjCAyvz2dtrhLD";
+}
+
+//Only supports XAuth currently
+- (NSNumber*)readabilityUseXAuth {
+  return [NSNumber numberWithInt:1];;
+}
 // Foursquare V2 - https://developer.foursquare.com
 - (NSString*)foursquareV2ClientId {
     return @"NFJOGLJBI4C4RSZ3DQGR0W4ED5ZWAAE5QO3FW02Z3LLVZCT4";
@@ -177,7 +198,6 @@
 - (NSString*)foursquareV2RedirectURI {
     return @"app://foursquare";
 }
-
 
 /*
  UI Configuration : Basic
