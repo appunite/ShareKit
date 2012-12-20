@@ -23,6 +23,8 @@
 
 - (void)sharerFinishedSending:(SHKSharer *)sharer
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSharerFinishedSending object:self];
+    
 	if (!sharer.quiet)
 		[[SHKActivityIndicator currentIndicator] displayCompleted:SHKLocalizedString(@"Saved!")];
 }

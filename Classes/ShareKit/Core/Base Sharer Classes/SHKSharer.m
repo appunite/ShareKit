@@ -30,6 +30,8 @@
 #import "SHKConfiguration.h"
 #import "SHKSharerDelegate.h"
 
+NSString const *kSharerFinishedSending  = @"kSHKSharerFinishSending";
+
 @interface SHKSharer ()
 
 - (void)updateItemWithForm:(SHKFormController *)form;
