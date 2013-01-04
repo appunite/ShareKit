@@ -31,7 +31,7 @@
 
 @class SHKSharer;
 
-extern NSString const *kSharerFinishedSending;
+extern NSString* const kSharerFinishedSending;
 
 @protocol SHKSharerDelegate <NSObject>
 

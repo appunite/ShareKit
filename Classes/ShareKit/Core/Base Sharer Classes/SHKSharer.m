@@ -30,7 +30,7 @@
 #import "SHKConfiguration.h"
 #import "SHKSharerDelegate.h"
 
-NSString const *kSharerFinishedSending  = @"kSHKSharerFinishSending";
+NSString* const kSharerFinishedSending  = @"kSHKSharerFinishSending";
 
 @interface SHKSharer ()
 
